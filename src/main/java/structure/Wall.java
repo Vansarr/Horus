@@ -4,26 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Wall implements Structure {
-    private List<Block> blocks = new ArrayList<>();
+    private final List<Block> blocks = new ArrayList<>();
 
     @Override
     public Optional<Block> findBlockByColor(String color) {
-        return Optional.ofNullable(findByPredicate(n -> color.equals(n.getColor())).get(0));
+        if (color == null) throw new IllegalArgumentException("color is null");
+        return blocks.stream()
+                .flatMap(Block::toStream)
+                .filter(n -> color.equals(n.getColor()))
+                .findFirst();
     }
 
     @Override
     public List<Block> findBlocksByMaterial(String material) {
-        return findByPredicate(n -> material.equals(n.getMaterial()));
-    }
-
-    private List<Block> findByPredicate(Predicate<Block> predicate){
+        if (material == null) throw new IllegalArgumentException("material is null");
         return blocks.stream()
                 .flatMap(Block::toStream)
-                .filter(predicate)
+                .filter(n -> material.equals(n.getMaterial()))
                 .collect(Collectors.toList());
     }
 
